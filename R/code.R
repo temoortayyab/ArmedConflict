@@ -39,16 +39,25 @@ write.csv(data1_long, here("data", "processeddata.csv"), row.names = FALSE)
 
 #pushing to github
 library(usethis) 
-use_git()
-
 
 usethis::use_git_config(user.name = "temoortayyab", user.email = "temoortayyab@gmail.com")
-gitcreds::gitcreds_set()
-
-use_github()
-
-
-
 
 # to confirm, generate a git situation-report, your user name and email should appear under Git config (global)
 usethis::git_sitrep()
+
+#committing files
+usethis::use_git()
+
+#token
+usethis::create_github_token()
+
+#setting token
+gitcreds::gitcreds_set()
+
+#pushing to github
+usethis::use_github()
+
+
+
+
+
