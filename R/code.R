@@ -37,25 +37,7 @@ data1_long <- data1 %>%
 
 write.csv(data1_long, here("data", "processeddata.csv"), row.names = FALSE)
 
-#pushing to github
-library(usethis) 
-
-use_git_config(user.name = "temoortayyab", user.email = "temoortayyab@gmail.com")
-
-# to confirm, generate a git situation-report, your user name and email should appear under Git config (global)
-git_sitrep()
-
-#committing files
-use_git()
-
-#token
-create_github_token()
-
-#setting token
-gitcreds_set()
-
-#pushing to github
-use_github()
+#github push code deleted to not recommit and create new repositories
 
 
 
