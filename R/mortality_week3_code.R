@@ -62,3 +62,9 @@ new_combined$ISO <- countrycode(new_combined$Country.Name,
 new_combined <- new_combined %>%
   select(-Country.Name)
 
+#Year is a character variable. Convert to numeric
+new_combined <- new_combined %>%
+  mutate(Year = as.numeric(Year))
+
+
+write.csv(new_combined, here("data", "allmortality.csv"), row.names = FALSE)

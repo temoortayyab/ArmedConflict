@@ -32,3 +32,5 @@ data3 <- subset_data %>%
 #updated week 3 script
 data4 <- data3 %>%
   select(Year, ISO, Drought, Earthquake)
+
+write.csv(data4, here("data", "processed_disaster_data.csv"), row.names = FALSE)

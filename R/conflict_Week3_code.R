@@ -22,8 +22,4 @@ conflict1 <- conflict_data %>%
 conflict1 <- conflict1 %>%
   mutate(year = year + 1)
 
-#rename year to Year
-conflict1 <- conflict1 %>%
-  rename(Year = year)
-
 write.csv(conflict1, here("data", "conflict.csv"), row.names = FALSE)
