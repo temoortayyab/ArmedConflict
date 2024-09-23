@@ -3,10 +3,17 @@ source(here("R", "code_disaster.R"))
 source(here("R", "conflict_Week3_code.R"))
 source(here("R", "mortality_week3_code.R"))
 
+covariates <- read.csv(here("data", "Original", "covariates.csv"), header = TRUE)
+
+#renaming year to Year
+covariates <- covariates %>%
+  rename(Year = year)
+
 #merging datasets based on year and ISO
 merged_data <- data4 %>% #disaster data
   full_join(new_combined, by = c("ISO", "Year")) %>% #mortality data
-  full_join(conflict1, by = c("ISO", "Year")) #conflict data
+  full_join(conflict1, by = c("ISO", "Year")) %>% #conflict data
+  full_join(covariates, by = c("ISO", "Year"))
 
 #counting if there are 20 rows for each country
 iso_counts <- merged_data %>%
