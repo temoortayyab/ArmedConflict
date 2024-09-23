@@ -1,7 +1,7 @@
 #Reading in file
 library(here)
 here()
-rawdat1 <- read.csv(here("Original", "disaster.csv"), header = TRUE)
+rawdat1 <- read.csv(here("data", "Original", "disaster.csv"), header = TRUE)
 
 ##filtering
 library(dplyr)
@@ -28,3 +28,7 @@ data3 <- subset_data %>%
     Earthquake = max(Earthquake),  # If any entry is 1, result will be 1
     .groups = 'drop'               # Drop the grouping structure
   )
+
+#updated week 3 script
+data4 <- data3 %>%
+  select(Year, ISO, Drought, Earthquake)

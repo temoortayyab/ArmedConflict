@@ -14,7 +14,7 @@
 #Reading in file
 library(here)
 here()
-rawdat <- read.csv(here("Original", "maternalmortality.csv"), header = TRUE)
+rawdat <- read.csv(here("data","Original", "maternalmortality.csv"), header = TRUE)
 
 ####Data manipulation
 
@@ -55,7 +55,7 @@ create_github_token()
 gitcreds_set()
 
 #pushing to github
-usethis::use_github()
+use_github()
 
 
 
