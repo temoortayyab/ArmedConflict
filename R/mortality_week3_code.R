@@ -66,5 +66,4 @@ new_combined <- new_combined %>%
 new_combined <- new_combined %>%
   mutate(Year = as.numeric(Year))
 
-
 write.csv(new_combined, here("data", "allmortality.csv"), row.names = FALSE)
