@@ -1,4 +1,5 @@
 #sourcing previously created scritps to obtain datasets from them to merge
+library(here)
 source(here("R", "code_disaster.R"))
 source(here("R", "conflict_Week3_code.R"))
 source(here("R", "mortality_week3_code.R"))

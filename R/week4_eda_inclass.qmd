@@ -1,0 +1,117 @@
+---
+title: "CHL8010: Statistical Programming and Computation in Health Data"
+author: "Week 4 In-class Assignment"
+date: "2024-09-30"
+format: pdf
+---
+
+```{r, warning=FALSE}
+library(here)
+library(ggcorrplot)
+library(ggplot2)
+library(dplyr)
+source(here("R", "merged_dataset.R"))
+```
+
+## Perfect your GitHub repo
+
+Some of you may still need to organize your GitHub repo. Use this time to do that. When you are confident with your repo, let me know -- I will try to reproduce your code.
+
+Your final data should have the following variables (you might have slightly different variable names).
+
+```{r}
+finaldata <- read.csv(here("data", "analytical", "finaldata.csv"), header = TRUE)
+names(finaldata)
+```
+
+Observations from Canada should look like this...
+
+```{r}
+finaldata %>%
+  dplyr::filter(country_name == "Canada")
+```
+
+Observations from Ecuador should look like this...
+
+```{r}
+finaldata %>%
+  dplyr::filter(country_name == "Ecuador")
+```
+
+## Exploratory data analysis
+
+Use the rest of the class time to explore the final data that will be used for analysis starting next week. At the end of the class, write a summary of your findings and push your **Quarto document (pdf)** to your repo.
+
+```{r}
+summary(finaldata)
+```
+
+```{r}
+# Check for missing values
+colSums(is.na(finaldata))
+```
+gdp1000, popdens, urban, male_edu, temp, rainfall1000, MarMor, InfMort, NeonatalMort 
+all have missing data 
+
+MarMor has a lot of missing data
+
+
+
+```{r}
+#Bivariate analysis
+
+#GDP and Population density
+ggplot(finaldata, aes(x=gdp1000, y=popdens)) + 
+  geom_point() + 
+  labs(title="GDP vs Population Density")
+
+#note missing values were removed
+```
+
+
+
+```{r}
+
+#Bivariate analysis
+
+#temp vs. rainfall1000
+ggplot(finaldata, aes(x=temp, y=rainfall1000)) + 
+  geom_point() + 
+  labs(title="Temperature vs Rainfall")
+```
+Lower temperature countries have less rainfall whereas for higher temperature, it varies
+
+```{r, warning=FALSE}
+
+#Bivariate analysis
+
+#gdp1000 vs. Under5Mort
+ggplot(finaldata, aes(x=gdp1000, y=Under5Mort)) + 
+  geom_point() + 
+  labs(title="GDP vs Under 5 mortality")
+```
+Countries with low GDP have substantially greater mortality rates for children under 5. 
+
+```{r, warning = FALSE}
+
+#Bivariate analysis
+
+#gdp1000 vs. NeonatalMort
+ggplot(finaldata, aes(x=gdp1000, y=NeonatalMort)) + 
+  geom_point() + 
+  labs(title="GDP vs Neonatal Mortality")
+```
+Countries with lower GDP have substantially higher neonatal mortality rates
+
+```{r, warning=FALSE}
+
+#Bivariate analysis
+
+#gdp1000 vs. InfMort
+ggplot(finaldata, aes(x=gdp1000, y=InfMort)) + 
+  geom_point() + 
+  labs(title="GDP vs Infant Mortality")
+```
+
+Countries with lower GDP have substantially higher infant mortality rates
+
