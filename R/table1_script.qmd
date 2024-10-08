@@ -1,0 +1,90 @@
+---
+title: "Script for Table1"
+date: "2024-10-07"
+format: pdf
+#pdf-engine: lualatex
+#pdf-engine-opts: 
+#  - '--no-shell-escape'
+#  - '--halt-on-error'
+---
+
+```{r,warning=FALSE}
+#libraries
+library(here)
+library(table1)
+library(dplyr)
+library(ggplot2)
+```
+
+```{r, warning = FALSE}
+#loading merged dataset and its script
+source(here("R", "merged_dataset.R"))
+```
+
+Creating a dataset that only has baseline data
+```{r}
+table1_data <- filter(finaldata, Year =="2000")
+```
+
+Relabelling 0s and 1s
+```{r}
+#relabelling 0s and 1s for variables
+table1_data$conflict <- factor(table1_data$conflict, levels = c(0, 1), labels = c("No", "Yes"))
+table1_data$Drought <- factor(table1_data$Drought, levels = c(0, 1), labels = c("No", "Yes"))
+table1_data$Earthquake <- factor(table1_data$Earthquake, levels = c(0, 1), labels = c("No", "Yes"))
+table1_data$OECD <- factor(table1_data$OECD, levels = c(0, 1), labels = c("No", "Yes"))
+table1_data$OECD2023 <- factor(table1_data$OECD2023, levels = c(0, 1), labels = c("No", "Yes"))
+```
+
+Relabelling variables
+```{r}
+label(table1_data$OECD) <- "OECD Member"
+label(table1_data$popdens) <- "Population Density"
+label(table1_data$temp) <- "Temperature (C)"
+label(table1_data$rainfall1000) <- "Rainfall (mm/yr)"
+label(table1_data$gdp1000) <- "GDP per capita"
+label(table1_data$total_deaths) <- "Total Deaths"
+label(table1_data$MarMor) <- "Maternal Mortality"
+label(table1_data$InfMort) <- "Infant Mortality"
+label(table1_data$Under5Mort) <- "Under 5 Mortality"
+label(table1_data$NeonatalMort) <- "Neonatal Mortality"
+label(table1_data$urban) <- "Urban Residence"
+label(table1_data$male_edu) <- "Male Education"
+
+```
+
+Creating Table 1
+```{r, warning=FALSE}
+table1(~ gdp1000 + OECD + OECD2023 + popdens + urban + agedep + male_edu + temp + rainfall1000 + total_deaths + Drought + Earthquake + MarMor + InfMort + NeonatalMort + Under5Mort | conflict, data=table1_data, 
+       caption = "Summary Table by Presence of Conflict, Year 2000", render.continuous=c(.="Median [Min, Max]"))
+```
+
+# Creating a figure that shows an increase in maternal mortality from Years 2000-2017
+
+Want to see yearly differences as well
+
+Subsetting data to only include Years 2000-2017, and creating a new variable of maternal mortality differences
+```{r}
+diff_summary <- finaldata %>%
+  filter(Year %in% c(2000, 2017)) %>%
+  group_by(ISO) %>%
+  summarise(change = first(MarMor[Year == 2017], default = NA) - 
+                first(MarMor[Year == 2000], default = NA), 
+            .groups = 'drop')
+
+# Identify ISOs with positive changes
+positive_isos <- diff_summary %>%
+  filter(change > 0) %>%
+  pull(ISO)
+
+# Filter finaldata to keep only the positive ISOs
+filtered_data <- finaldata %>%
+  filter(ISO %in% positive_isos)
+
+# Create the plot
+ggplot(filtered_data, aes(x = Year, y = MarMor, group = ISO, color = ISO)) +
+  geom_line(alpha = 0.7) +
+  labs(y = "Maternal Mortality", x = "Year", color = "Country (ISO)") +
+  theme_minimal() +
+  scale_color_discrete(name = "ISO Code")
+```
