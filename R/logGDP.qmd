@@ -1,0 +1,109 @@
+---
+title: "LogGDP"
+format: pdf
+editor: visual
+---
+
+## Log transforming GDP and running regression analyses
+
+## Running Code
+
+```{r}
+
+library(here)
+finaldata <- read.csv(here("data", "analytical", "finaldata.csv"), header = TRUE)
+
+lmmod <- lm(MarMor ~ -1 + conflict + gdp1000 + OECD + popdens + urban +
+              agedep + male_edu + temp + rainfall1000 + Earthquake + Drought +
+              ISO + as.factor(Year), 
+            data = finaldata)
+
+library(plm)
+plmmod <- plm(MarMor ~ conflict + gdp1000 + OECD + popdens + urban + 
+                agedep + male_edu + temp + rainfall1000 + Earthquake + Drought,
+              index = c("ISO", "Year"),
+              effect = "twoways",
+              model = "within",
+              data = finaldata)
+
+#summary(lmmod)
+
+#comparing output
+library(texreg)
+
+#screenreg(list(lmmod,plmmod))
+#in panel linear mmodel, omits coefficietns for the countries. for linear, get all
+
+#we also need to put fixed effect for year, not just country
+
+
+#Adding fixed-effects for year
+
+lmmod1 <- lm(MarMor ~ -1 + conflict + gdp1000 + OECD + popdens + urban +
+              agedep + male_edu + temp + rainfall1000 + Earthquake + Drought +
+              ISO + as.factor(Year), 
+            data = finaldata)
+
+plmmod1 <- plm(MarMor ~ conflict + gdp1000 + OECD + popdens + urban + 
+                agedep + male_edu + temp + rainfall1000 + Earthquake + Drought,
+              index = c("ISO", "Year"),
+              effect = "twoways",
+              model = "within",
+              data = finaldata)
+
+#running this for all mortality outcomes
+
+preds <- as.formula(" ~ conflict + gdp1000 + OECD + popdens + urban + 
+                  agedep + male_edu + temp + rainfall1000 + Earthquake + Drought + 
+                  ISO + as.factor(Year)")
+
+matmormod <- lm(update.formula(preds, MarMor ~ .), data = finaldata)
+un5mormod <- lm(update.formula(preds, Under5Mort ~ .), data = finaldata)
+infmormod <- lm(update.formula(preds, InfMort ~ .), data = finaldata)
+neomormod <- lm(update.formula(preds, NeonatalMort ~ .), data = finaldata)
+
+#log transform GDP. Right now, positive relationship with GDP and mortality. 
+finaldata$logGDP <- log(finaldata$gdp1000)
+
+preds_gdplog <- as.formula(" ~ conflict + logGDP + OECD + popdens + urban + 
+                  agedep + male_edu + temp + ISO + Year")
+
+matmormod <- plm(update.formula(preds, MarMor ~ .), index = c("ISO", "Year"),
+                 effect = "twoways", 
+                 model = "within", 
+                 data = finaldata)
+un5mormod <- plm(update.formula(preds, Under5Mort ~ .), index = c("ISO", "Year"),
+                 effect = "twoways", 
+                 model = "within", 
+                 data = finaldata)
+infmormod <- plm(update.formula(preds, InfMort ~ .), index = c("ISO", "Year"),
+                 effect = "twoways", 
+                 model = "within", 
+                 data = finaldata)
+neomormod <- plm(update.formula(preds, NeonatalMort ~ .), index = c("ISO", "Year"),
+                 effect = "twoways",
+                 model = "within",
+                 data = finaldata)
+
+keepvars <- list("conflict" = "armed conflict",
+                 "logGDP" = "log(GDP)",
+                 "OECD" = "OECD",
+                 "popdens" = "population density",
+                 "urban" = "urban",
+                 "agedep" = "Age dependency",
+                 "male_edu" = "male education",
+                 "temp" = "temperature",
+                 "ISO" = "ISO",
+                 "Year" = "Year")
+
+library(htmltools)
+h <- htmlreg(list(matmormod, un5mormod, infmormod, neomormod),
+             ci.force = TRUE,
+             custom.coef.map = keepvars,
+             custom.model.names = c("Maternal mortality", "Under-5 mortality",
+                                    "Infant Mortality", "Neonatal Mortality"))
+HTML(h)
+
+
+
+```
