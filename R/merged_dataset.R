@@ -49,12 +49,12 @@ write.csv(finaldata, file = here("data", "analytical", "finaldata.csv"), row.nam
 str(finaldata)
 
 # Define level-1 and level-2 variables
-level_1_vars <- c("Year", "gdp1000", "popdens", "agedep", "male_edu", "temp", "rainfall1000", "MarMor", "InfMort", "NeonatalMort", "Under5Mort", "total_deaths", "conflict", "Drought", "Earthquake")  # Level-1 variables
-level_2_vars <- c("country_name", "ISO", "region", "OECD", "OECD2023", "urban")  # Level-2 variables
+level_1_var <- c("Year", "gdp1000", "urban", "popdens", "agedep", "male_edu", "temp", "rainfall1000", "MarMor", "InfMort", "NeonatalMort", "Under5Mort", "total_deaths", "conflict", "Drought", "Earthquake")  # Level-1 variables
+level_2_var <- c("country_name", "ISO", "region", "OECD", "OECD2023")  # Level-2 variables
 
 # Create a data frame for level-1 and level-2 variables
-level_1_data <- finaldata[level_1_vars]
-level_2_data <- finaldata[level_2_vars]
+level_1_data <- finaldata[level_1_var]
+level_2_data <- finaldata[level_2_var]
 
 # Check the created data frames
 print(head(level_1_data))
@@ -63,9 +63,10 @@ print(head(level_2_data))
 #creating a list of level 1 and level 2
 #list of variables by level 1 or level 2
 variable_categories <- list(
-  level_1 = level_1_vars,
-  level_2 = level_2_vars
+  level_1 = level_1_var,
+  level_2 = level_2_var
 )
 
 # Print the variable categories
 print(variable_categories)
+
