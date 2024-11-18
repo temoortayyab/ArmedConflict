@@ -6,9 +6,6 @@ library(boot)
 #loading data
 final <- read.csv(here("data", "analytical", "finaldata.csv"))
 
-#Setting seed
-set.seed(2024)
-
 #Creating a function for calculating bootstrap CIs based on difference in median
 bootstrap_ci <- function(data, response_var, group_var, R = 1000) {
   # Define the bootstrapping function
@@ -21,6 +18,8 @@ bootstrap_ci <- function(data, response_var, group_var, R = 1000) {
   }
   
   # Perform bootstrapping
+  #Setting seed
+  set.seed(2024)
   bootout <- boot(data, statistic = getmeddiff, strata = data[[group_var]], R = R)
   
   # Compute bootstrap confidence intervals
@@ -53,6 +52,11 @@ results <- lapply(variables, function(var) {
 names(results) <- variables
 
 # Example: Print results 
+results$InfMort
+results$NeonatalMort
+results$Under5Mort
+
+#print all at once
 results
 
 
