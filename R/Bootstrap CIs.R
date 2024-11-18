@@ -6,37 +6,33 @@ library(boot)
 #loading data
 final <- read.csv(here("data", "analytical", "finaldata.csv"))
 
+#Setting seed
+set.seed(2024)
 
 #Creating a function for calculating bootstrap CIs based on difference in median
-bootstrap_ci <- function(data, response_var, group_var, R = 1000, probs = c(0.025, 0.975)) {
-  # Ensure the response_var and group_var are interpreted as strings
-  response <- data[[response_var]]
-  group <- data[[group_var]]
-  
-  # Define the bootstrapping statistic function
+bootstrap_ci <- function(data, response_var, group_var, R = 1000) {
+  # Define the bootstrapping function
   getmeddiff <- function(data, indices) {
     sample_data <- data[indices, ]
-    group_meds <- tapply(sample_data[[response_var]], sample_data[[group_var]], FUN = function(x) median(x, na.rm = TRUE))
-    meddiff <- group_meds[2] - group_meds[1] # Ensure group levels are in the correct order
+    group_meds <- tapply(sample_data[[response_var]], sample_data[[group_var]], 
+                         FUN = function(x) median(x, na.rm = TRUE))
+    meddiff <- group_meds[2] - group_meds[1]
     return(meddiff)
   }
   
   # Perform bootstrapping
-  bootout <- boot(data, statistic = getmeddiff, strata = group, R = R)
+  bootout <- boot(data, statistic = getmeddiff, strata = data[[group_var]], R = R)
   
-  # Calculate bootstrap standard error
-  se <- sd(bootout$t)
-  
-  # Calculate percentile confidence intervals
-  ci <- quantile(bootout$t, probs = probs)
+  # Compute bootstrap confidence intervals
+  ci <- boot.ci(boot.out = bootout, conf = 0.95, type = c("basic", "perc", "bca"))
   
   # Return the results
   list(
     observed_diff = bootout$t0,
-    bootstrap_se = se,
     ci = ci
   )
 }
+
 
 #Specifying each variable and bootstrapping, and obtaining CIs
 # Subset data for 2017
@@ -57,8 +53,6 @@ results <- lapply(variables, function(var) {
 names(results) <- variables
 
 # Example: Print results 
-results$InfMort
-results$NeonatalMort
-results$Under5Mort
+results
 
 
